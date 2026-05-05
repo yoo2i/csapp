@@ -155,7 +155,7 @@ int bitXor(int x, int y) {
  */
 int tmin(void) {
 
-  return 2;
+  return 1 << 31; //tmin = 0x80000000 = 1 followed by 31 zeros
 
 }
 //2
@@ -166,8 +166,10 @@ int tmin(void) {
  *   Max ops: 10
  *   Rating: 1
  */
+ // 不要用越界/溢出和非法移位产生的魔数进行判断。
+ // UB: 1. 越界/溢出 2. 非法移位
 int isTmax(int x) {
-  return 2;
+	return !(~((x + 1) ^ x)) & !!(x + 1);
 }
 /* 
  * allOddBits - return 1 if all odd-numbered bits in word set to 1
