@@ -154,9 +154,7 @@ int bitXor(int x, int y) {
  *   Rating: 1
  */
 int tmin(void) {
-
-  return 1 << 31; //tmin = 0x80000000 = 1 followed by 31 zeros
-
+  	return 1 << 31; //tmin = 0x80000000 = 1 followed by 31 zeros
 }
 //2
 /*
@@ -168,6 +166,12 @@ int tmin(void) {
  */
  // 不要用越界/溢出和非法移位产生的魔数进行判断。
  // UB: 1. 越界/溢出 2. 非法移位
+ // y = x + 1;
+ // return !(~((1 << 31) ^ ~y));
+ // 这里的y是越界产生的结果，编译器假设程序员从不溢出，所以直接给它优化了一个常数
+ // 下面的解法照样使用了越界/溢出产生的魔数进行判断
+ // 但是由于-1的存在让编译器无法优化
+ // 所以编译器无法将其优化成一个常数
 int isTmax(int x) {
 	return !(~((x + 1) ^ x)) & !!(x + 1);
 }
@@ -180,7 +184,10 @@ int isTmax(int x) {
  *   Rating: 2
  */
 int allOddBits(int x) {
-  return 2;
+  	int mask = 0x55;
+	mask = (mask << 8) + mask; // 0x5555
+	mask = (mask << 16) + mask; // 0x55555555
+	return !(~(x | mask));
 }
 /* 
  * negate - return -x 
@@ -190,7 +197,7 @@ int allOddBits(int x) {
  *   Rating: 2
  */
 int negate(int x) {
-  return 2;
+  	return ~x + 1;
 }
 //3
 /* 
@@ -203,7 +210,8 @@ int negate(int x) {
  *   Rating: 3
  */
 int isAsciiDigit(int x) {
-  return 2;
+  	int y = x + (~0x30 + 1); // y = x - 0x30
+	return !(y >> 4) & !(y >> 3 & (y >> 2 | y >> 1));
 }
 /* 
  * conditional - same as x ? y : z 
