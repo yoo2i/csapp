@@ -221,7 +221,7 @@ int isAsciiDigit(int x) {
  *   Rating: 3
  */
 int conditional(int x, int y, int z) {
-  	int mask = ~!!x + 1;
+  	int mask = ~!!x + 1; // 0 -> 0000 其他 -> 1111
 	return (y & mask) | (z & ~mask);
 }
 /* 
@@ -248,7 +248,10 @@ int isLessOrEqual(int x, int y) {
  *   Rating: 4 
  */
 int logicalNeg(int x) {
-  return 2;
+	int xSignal = x >> 31;
+	int minusxSignal = (~x + 1) >> 31;
+	int signal = xSignal | minusxSignal;
+	return signal + 1;
 }
 /* howManyBits - return the minimum number of bits required to represent x in
  *             two's complement
@@ -263,7 +266,43 @@ int logicalNeg(int x) {
  *  Rating: 4
  */
 int howManyBits(int x) {
-  return 0;
+  	int nums = 0;
+	int xSignal = x >> 31; // + 0000 - 1111
+	int target = xSignal ^ x; // 正负数统一
+
+	int b16;
+	int b8;
+	int b4;
+	int b2;
+	int b1;
+	int b0;
+
+	// target >> 16之后，若为0则b16为0，非0则b16 = 16
+	// 原本使用condition函数，优化之后发现这样优美得多
+	b16 = !!(target >> 16) << 4;
+	nums += b16;
+	target = target >> b16;
+
+	b8 = !!(target >> 8) << 3;
+	nums += b8;
+	target = target >> b8;
+
+	b4 = !!(target >> 4) << 2;
+	nums += b4;
+	target = target >> b4;
+
+	b2 = !!(target >> 2) << 1;
+	nums += b2;
+	target = target >> b2;
+
+	b1 = !!(target >> 1);
+	nums += b1;
+	target = target >> b1;
+
+	b0 = target;
+	nums += b0;
+	
+	return nums + 1;
 }
 //float
 /* 
