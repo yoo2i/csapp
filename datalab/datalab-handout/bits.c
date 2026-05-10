@@ -358,20 +358,17 @@ int floatFloat2Int(unsigned uf) {
 	unsigned frac = uf & 0x007fffff;
 	unsigned answer;
 
-	if (exponent == 0) {
+	if (exp < 0) {
 		return 0;
-	} else if (exponent == 255) {
+	} else if (exp > 30) {
 		return 0x80000000u;
 	} else {
 		answer = frac | 0x00800000;
-		exp -= 23;
 
-		if (exp <= 0) {
-			if (exp >= -32) answer >>= -exp;
-			else return 0;
+		if (exp >= 23) {
+			answer <<= exp - 23;
 		} else {
-			if (exp <= 32) answer <<= exp;
-			else return 0x80000000u;
+			answer >>= 23 - exp;
 		}
 
 		if (sign) {
@@ -395,5 +392,19 @@ int floatFloat2Int(unsigned uf) {
  *   Rating: 4
  */
 unsigned floatPower2(int x) {
-    return 2;
+	unsigned answer;
+	if (x < -149) {
+		return 0;
+	} else if (x > 127) {
+		return 0x7f800000u;
+	} else {
+		if (x < -126) { // 非规格化数 x ∈ [-149, -127]
+			answer = 0x00800000;
+			answer >>= -(x + 126);
+		} else { // 规格化数
+			answer = (x + 127) << 23;
+		}
+	}
+
+	return answer;
 }
