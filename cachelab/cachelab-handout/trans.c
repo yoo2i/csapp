@@ -1,4 +1,4 @@
-/* 
+/* yoo2i's work
  * trans.c - Matrix transpose B = A^T
  *
  * Each transpose function must have a prototype of the form:
@@ -46,6 +46,43 @@ void trans(int M, int N, int A[N][M], int B[M][N])
 
 }
 
+char trans_32x32_test_desc[] = "My 32x32 Test";
+void trans_32x32_test(int M, int N, int A[N][M], int B[M][N]) {
+    if (M == 32 && N == 32) {
+        int v0, v1, v2, v3, v4, v5, v6, v7;
+        for(int ii = 0; ii < N; ii += 8) {
+            for (int jj = 0; jj < M; jj += 8) {
+                for (int i = ii; i < ii + 8; i++) {
+                    for (int j = jj; j < jj + 8; j++) {
+                        if (i == j) {
+                            if (i % 8 == 0) v0 = A[i][j];
+                            if (i % 8 == 1) v1 = A[i][j];
+                            if (i % 8 == 2) v2 = A[i][j];
+                            if (i % 8 == 3) v3 = A[i][j];
+                            if (i % 8 == 4) v4 = A[i][j];
+                            if (i % 8 == 5) v5 = A[i][j];
+                            if (i % 8 == 6) v6 = A[i][j];
+                            if (i % 8 == 7) v7 = A[i][j];
+                        } else {
+                            B[j][i] = A[i][j];
+                        }
+                    }
+                }
+                if (jj == ii) {
+                    B[jj][ii] = v0;
+                    B[jj + 1][ii + 1] = v1;
+                    B[jj + 2][ii + 2] = v2;
+                    B[jj + 3][ii + 3] = v3;
+                    B[jj + 4][ii + 4] = v4;
+                    B[jj + 5][ii + 5] = v5;
+                    B[jj + 6][ii + 6] = v6;
+                    B[jj + 7][ii + 7] = v7;
+                }
+            }
+        }
+    }
+}
+
 /*
  * registerFunctions - This function registers your transpose
  *     functions with the driver.  At runtime, the driver will
@@ -60,6 +97,8 @@ void registerFunctions()
 
     /* Register any additional transpose functions */
     registerTransFunction(trans, trans_desc); 
+
+    registerTransFunction(trans_32x32_test, trans_32x32_test_desc);
 
 }
 
